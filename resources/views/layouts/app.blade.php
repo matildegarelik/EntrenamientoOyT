@@ -23,6 +23,9 @@
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+    <!-- Estilos de TinyMCE -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tinymce@5.10.2/themes/content/default/content.min.css">
+
  
     <!-- Custom styles for this template-->
     <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -31,8 +34,11 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-
-        @include('layouts.sidebar')
+        @if (Auth::user() && Auth::user()->role === 'admin')
+            @include('layouts.sidebar_admin')
+        @else
+            @include('layouts.sidebar_user')
+        @endif
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
@@ -106,5 +112,9 @@
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@5.10.2/tinymce.min.js"></script>
+
+
+    @yield('scripts')
 </body>
 </html>
