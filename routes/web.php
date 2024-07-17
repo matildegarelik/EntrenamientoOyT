@@ -40,4 +40,8 @@ Route::get('topics/{topic}/test', [App\Http\Controllers\TestController::class, '
 Route::post('topics/{topic}/test', [App\Http\Controllers\TestController::class, 'submitUserTest'])->name('user.test.submit');
 Route::get('user-tests/{userTest}/results', [App\Http\Controllers\TestController::class, 'showUserTestResults'])->name('user.test.results');
 
+Route::get('/profile', [App\Http\Controllers\UsuarioController::class, 'edit'])->name('profile.edit');
+Route::post('/profile', [App\Http\Controllers\UsuarioController::class, 'update'])->name('profile.update');
+
+
 

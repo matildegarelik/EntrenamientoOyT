@@ -8,9 +8,19 @@
             <li class="list-group-item">
                 <strong>Question:</strong> {{ $question->question }}
                 <br>
-                <strong>Options:</strong> {{ implode(', ', $question->options) }}
+                <strong>Type:</strong> {{$question->type}}
                 <br>
-                <strong>Correct Answers:</strong> {{ implode(', ', $question->correct_answers) }}
+                <strong>Options:</strong> <br>
+                @foreach ($question->options as $option)
+                    <input type="radio" disabled>{{$option}}<br>
+                @endforeach
+                <br>
+                <strong>Correct Answers:</strong> 
+                @foreach($question->correct_answers as $i=> $ca)
+                    @if($ca==1)
+                        {{$question->options[$i]}}
+                    @endif
+                @endforeach
             </li>
         @endforeach
     </ul>

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Test;
-use App\Models\Topic;
 use App\Models\Question;
+use App\Models\Topic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
@@ -17,36 +18,52 @@ class TestController extends Controller
 
     public function create()
     {
-        $topics = Topic::doesntHave('children')->get();
+        $topics = Topic::whereDoesntHave('children')->get(); // Only topics that are not parents
         return view('tests.create', compact('topics'));
     }
 
+
     public function store(Request $request)
     {
+        Log::info('Request data:', $request->all());
+
         $request->validate([
             'topic_id' => 'required|exists:topics,id',
             'questions' => 'required|array',
-            'questions.*.question' => 'required|string|max:255',
+            'questions.*.question' => 'required|string',
             'questions.*.options' => 'required|array',
+            'questions.*.options.*' => 'required|string',
             'questions.*.correct_answers' => 'required|array',
+            'questions.*.correct_answers.*' => 'boolean'
         ]);
 
         $test = Test::create(['topic_id' => $request->topic_id]);
 
-        foreach ($request->questions as $question) {
+        foreach ($request->questions as $questionData) {
             $test->questions()->create([
-                'question' => $question['question'],
-                'options' => $question['options'],
-                'correct_answers' => $question['correct_answers'],
+                'question' => $questionData['question'],
+                'options' => $questionData['options'],
+                'correct_answers' => $questionData['correct_answers'],
             ]);
         }
 
         return redirect()->route('tests.index')->with('success', 'Test created successfully.');
+    
     }
-
-    public function show(Test $test)
+    public function show($id)
     {
-        $test->load('questions');
+        $test = Test::with('questions')->findOrFail($id);
+        foreach($test->questions as $q){
+            $cont=0;
+            foreach($q->correct_answers as $ca){
+                if($ca>0) $cont++;
+            }
+            if($cont>1){
+                $q->type="multiple";
+            }else{
+                $q->type='single';
+            }
+        }
         return view('tests.show', compact('test'));
     }
 
@@ -124,7 +141,5 @@ class TestController extends Controller
         $userTest->load('test.topic', 'user');
         return view('tests.results', compact('userTest'));
     }
-
-
 
 }

@@ -43,18 +43,24 @@
             </div>-->
             <div class="list-group">
                 @foreach ($topics as $topic)
-                    <div class="list-group-item">
-                        <a href="{{ route('topics.show', $topic) }}">{{ $topic->name }}</a>
-                        @if ($topic->children->count() > 0)
-                            <span class="toggle-child" data-toggle="collapse" data-target="#collapse-{{ $topic->id }}"><i class="fa fa-chevron-down"></i></span>
-                            <div class="collapse" id="collapse-{{ $topic->id }}">
-                                <input type="text" class="form-control mt-2 mb-2 searchTopics" data-parent="#collapse-{{ $topic->id }}" placeholder="Buscar tema">
-                                @foreach ($topic->children as $child)
-                                    <a href="{{ route('topics.show', $child) }}" class="list-group-item list-group-item-action pl-4">{{ $child->name }}</a>
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
+                    @if (!$topic->parent_id)
+                        <div class="list-group-item parent-topic" data-name="{{ $topic->name }}">
+                            <a href="{{ route('topics.show', $topic) }}">{{ $topic->name }}</a>
+                            @if ($topic->children->count() > 0)
+                                <span class="toggle-child" data-toggle="collapse" data-target="#collapse-{{ $topic->id }}">
+                                    <i class="fa fa-chevron-down"></i>
+                                </span>
+                                <div class="collapse" id="collapse-{{ $topic->id }}">
+                                    <input type="text" class="form-control mt-2 mb-2 searchTopics" data-parent="#collapse-{{ $topic->id }}" placeholder="Buscar tema">
+                                    <div class="child-topics">
+                                        @foreach ($topic->children as $child)
+                                            @include('topics.child', ['child' => $child])
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 @endforeach
             </div>
             
@@ -105,21 +111,20 @@
 
 <script>
     // Filtrar temas según la búsqueda en cada sección
-    var searchInputs = document.querySelectorAll('.searchTopics');
-    searchInputs.forEach(function(input) {
+    document.querySelectorAll('.searchTopics').forEach(input => {
         input.addEventListener('input', function() {
-            var filter, div, items, a, i, txtValue;
-            filter = this.value.toUpperCase();
-            div = document.querySelector(this.getAttribute('data-parent'));
-            items = div.getElementsByClassName('list-group-item list-group-item-action');
-            for (i = 0; i < items.length; i++) {
-                a = items[i].textContent || items[i].innerText;
-                if (a.toUpperCase().indexOf(filter) > -1) {
-                    items[i].style.display = "";
-                } else {
-                    items[i].style.display = "none";
-                }
-            }
+            const filter = this.value.toUpperCase();
+            const parent = document.querySelector(this.dataset.parent);
+            const items = parent.querySelectorAll('.list-group-item-action');
+
+            items.forEach(item => {
+                const text = item.textContent || item.innerText;
+                item.style.display = text.toUpperCase().includes(filter) ? '' : 'none';
+            });
+
+            // Ocultar el grupo de hijos si no hay resultados
+            const hasVisibleChildren = Array.from(items).some(item => item.style.display !== 'none');
+            parent.closest('.parent-topic').style.display = hasVisibleChildren || text.toUpperCase().includes(filter) ? '' : 'none';
         });
     });
 </script>
