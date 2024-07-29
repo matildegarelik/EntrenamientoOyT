@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Test;
 use App\Models\Question;
 use App\Models\Topic;
+use App\Models\UserTest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class TestController extends Controller
 {
@@ -101,7 +103,7 @@ class TestController extends Controller
         return redirect()->route('tests.index')->with('success', 'Test deleted successfully.');
     }
 
-    public function showUserTest(Topic $topic)
+    /*public function showUserTest(Topic $topic)
     {
         $topic->load('test.questions');
         return view('tests.user_tests', compact('topic'));
@@ -140,6 +142,78 @@ class TestController extends Controller
     {
         $userTest->load('test.topic', 'user');
         return view('tests.results', compact('userTest'));
+    }*/
+
+    public function submitTest(Request $request, $testId)
+    {
+        Log::info('Request data:', $request->all());
+
+        $test = Test::findOrFail($testId);
+        $answers = $request->input('answers');
+
+        $score = 0;
+        $userAnswers = [];
+
+        foreach ($test->questions as $index => $question) {
+            $cont=0;
+            foreach($question->correct_answers as $ca){
+                if($ca>0) $cont++;
+            }
+            if($cont>1){
+                $question->type="multiple";
+            }else{
+                $question->type='single';
+            }
+
+
+            $correctAnswers = $question->correct_answers;
+            $totalCorrectAnswers = array_sum($correctAnswers);
+
+            if ($question->type == 'multiple') {
+                $userAnswer = $answers[$index] ?? [];
+                $correctCount = 0;
+                $incorrectCount = 0;
+
+                foreach ($userAnswer as $answer) {
+                    if (isset($correctAnswers[$answer]) && $correctAnswers[$answer] == 1) {
+                        $correctCount++;
+                    } else {
+                        $incorrectCount++;
+                    }
+                }
+
+                if ($incorrectCount == 0 && $correctCount > 0) {
+                    $score += $correctCount / $totalCorrectAnswers;
+                }
+            } else {
+                $userAnswer = $answers[$index]['answer'] ?? null;
+                if ($userAnswer !== null && $correctAnswers[$userAnswer] == 1) {
+                    $score++;
+                }
+            }
+
+            $userAnswers[] = [
+                'question' => $question->question,
+                'options' => $question->options,
+                'user_answer' => $userAnswer,
+                'correct_answers' => $correctAnswers,
+            ];
+        }
+
+        UserTest::create([
+            'user_id' => Auth::id(),
+            'test_id' => $test->id,
+            'score' => $score,
+            'answers' => $userAnswers,
+        ]);
+
+        return redirect()->route('tests.results');
     }
 
+    public function results()
+    {
+        $userTests = UserTest::with('test.topic', 'test.questions')->where('user_id', auth()->id())->get();
+        return view('tests.results', compact('userTests'));
+    }
 }
+

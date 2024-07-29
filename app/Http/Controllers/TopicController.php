@@ -37,6 +37,21 @@ class TopicController extends Controller
     public function show(Topic $topic)
     {
         $topic->load('children');
+        $topic->load('test');
+        if(isset($topic->test)){
+            foreach($topic->test->questions as $q){
+                $cont=0;
+                foreach($q->correct_answers as $ca){
+                    if($ca>0) $cont++;
+                }
+                if($cont>1){
+                    $q->type="multiple";
+                }else{
+                    $q->type='single';
+                }
+            }
+        }
+        
         return view('topics.show', compact('topic'));
     }
 

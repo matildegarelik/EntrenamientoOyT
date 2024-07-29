@@ -32,5 +32,40 @@
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
     @endcan
+
+    <!-- TEST -->
+    @if($topic->test)
+        <h1>Test</h1>
+        <form method="POST" action="{{ route('tests.submit', $topic->test->id) }}">
+            @csrf
+            @foreach($topic->test->questions as $index => $question)
+                <div class="form-group">
+                    <label>{{ $question->question }}</label>
+                    @if($question->type == 'multiple')
+                        @foreach($question->options as $optionIndex => $option)
+                            <div>
+                                <input type="checkbox" name="answers[{{ $index }}][]" value="{{ $optionIndex }}">
+                                {{ $option }}
+                            </div>
+                        @endforeach
+                    @else
+                        @foreach($question->options as $optionIndex => $option)
+                            <div>
+                                <input type="radio" name="answers[{{ $index }}][answer]" value="{{ $optionIndex }}">
+                                {{ $option }}
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            @endforeach
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    @endif
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    
+</script>
 @endsection

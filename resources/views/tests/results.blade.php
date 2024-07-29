@@ -2,20 +2,37 @@
 
 @section('content')
 <div class="container">
-    <h1>Test Results</h1>
-    <h3>Topic: {{ $userTest->test->topic->name }}</h3>
-    <h4>User: {{ $userTest->user->name }}</h4>
-    <h4>Score: {{ $userTest->score }}%</h4>
-    <ul class="list-group">
-        @foreach ($userTest->test->questions as $question)
-            <li class="list-group-item">
-                <strong>Question:</strong> {{ $question->question }}
-                <br>
-                <strong>Your Answer:</strong> {{ $userTest->answers[$question->id] ?? 'Not Answered' }}
-                <br>
-                <strong>Correct Answers:</strong> {{ implode(', ', $question->correct_answers) }}
-            </li>
-        @endforeach
-    </ul>
+    <h2>My Tests</h2>
+    @foreach($userTests as $userTest)
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ $userTest->test->topic->name }} - Test Result</h5>
+                <p>Score: {{ $userTest->score }}/{{ count($userTest->test->questions) }}</p>
+                @foreach($userTest->answers as $answerData)
+                    <div>
+                        <strong>Question:</strong> {{ $answerData['question'] }}<br>
+                        @if(is_array($answerData['user_answer']))
+                            <strong>Your Answers:</strong>
+                            @foreach($answerData['user_answer'] as $ua)
+                                {{ $answerData['options'][$ua] ?? 'Not answered' }}
+                                @if (!$loop->last), @endif
+                            @endforeach
+                            <br>
+                        @else
+                            <strong>Your Answer:</strong> {{ $answerData['options'][$answerData['user_answer']] ?? 'Not answered' }}<br>
+                        @endif
+                        <strong>Correct Answers:</strong>
+                        @foreach($answerData['options'] as $index => $option)
+                            @if($answerData['correct_answers'][$index] == 1)
+                                {{ $option }}@if (!$loop->last), @endif
+                            @endif
+                        @endforeach
+                        <br>
+                    </div>
+                    <hr>
+                @endforeach
+            </div>
+        </div>
+    @endforeach
 </div>
 @endsection

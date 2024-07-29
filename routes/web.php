@@ -30,8 +30,9 @@ Route::group(['middleware' => ['auth']], function() {
 });
 
 Route::resource('topics', App\Http\Controllers\TopicController::class);
+
 Route::resource('tests', App\Http\Controllers\TestController::class);
-Route::get('topics/create/{parent_id?}', [App\Http\Controllers\TopicController::class, 'create'])->name('topics.create');
+Route::get('topics/create/{parent_id?}', [App\Http\Controllers\TopicController::class, 'create']);
 
 
 // Ruta adicional para obtener temas hijos
@@ -43,5 +44,5 @@ Route::get('user-tests/{userTest}/results', [App\Http\Controllers\TestController
 Route::get('/profile', [App\Http\Controllers\UsuarioController::class, 'edit'])->name('profile.edit');
 Route::post('/profile', [App\Http\Controllers\UsuarioController::class, 'update'])->name('profile.update');
 
-
-
+Route::post('tests/{test}/submit', [App\Http\Controllers\TestController::class, 'submitTest'])->name('tests.submit');
+Route::get('tests_results', [App\Http\Controllers\TestController::class, 'results'])->name('tests.results');
