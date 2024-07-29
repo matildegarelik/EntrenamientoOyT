@@ -1,0 +1,41 @@
+/* Custom CSS */
+.sidebar-dark .parent-topic {
+    position: relative;
+}
+
+.sidebar-dark .child-topic {
+    padding-left: 20px;
+}
+
+.parent-topic .toggle-child {
+    cursor: pointer;
+    float: right;
+    margin-right: 10px;
+}
+
+.parent-topic .toggle-child i {
+    transition: transform 0.3s;
+}
+
+.parent-topic .collapse.show .toggle-child i {
+    transform: rotate(180deg);
+}
+
+.child-topics {
+    display: flex;
+    flex-direction: column;
+}
+
+.child-topics .child-topic {
+    display: flex;
+    flex-direction: column;
+}
+
+.child-topics .child-topic .child-topics {
+    padding-left: 20px;
+}
+
+.child-topics .searchTopics {
+    width: 100%;
+    margin-bottom: 10px;
+}

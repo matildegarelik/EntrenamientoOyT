@@ -79,7 +79,7 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/">Mis Tarjetas</a>
+                <a class="collapse-item" href="{{route('cards.index')}}">Mis Tarjetas</a>
             </div>
         </div>
     </li>

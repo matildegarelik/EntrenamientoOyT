@@ -46,3 +46,10 @@ Route::post('/profile', [App\Http\Controllers\UsuarioController::class, 'update'
 
 Route::post('tests/{test}/submit', [App\Http\Controllers\TestController::class, 'submitTest'])->name('tests.submit');
 Route::get('tests_results', [App\Http\Controllers\TestController::class, 'results'])->name('tests.results');
+
+
+// Tarjetas 
+Route::middleware(['auth'])->group(function () {
+    Route::resource('cards', App\Http\Controllers\CardController::class);
+});
+Route::post('cards/{card}/update-next-reminder', [App\Http\Controllers\CardController::class, 'updateNextReminder'])->name('cards.updateNextReminder');

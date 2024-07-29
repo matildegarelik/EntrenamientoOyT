@@ -32,10 +32,23 @@
         tinymce.init({
             selector: '#topic-content',
             plugins: 'advlist autolink lists link image charmap print preview anchor',
-            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | mycustombutton',
             toolbar_mode: 'floating',
-            height: 400
+            height: 400,
+            setup: function (editor) {
+                editor.ui.registry.addButton('mycustombutton', {
+                    text: 'Select Fragment',
+                    onAction: function () {
+                        let selectedText = editor.selection.getContent({ format: 'html' });
+                        if (selectedText) {
+                            let newContent = `<span class="fragment">${selectedText}</span>`;
+                            editor.selection.setContent(newContent);
+                        }
+                    }
+                });
+            }
         });
     </script>
 @endsection
+
 
