@@ -32,7 +32,7 @@ Route::group(['middleware' => ['auth']], function() {
 Route::resource('topics', App\Http\Controllers\TopicController::class);
 
 Route::resource('tests', App\Http\Controllers\TestController::class);
-Route::get('topics/create/{parent_id?}', [App\Http\Controllers\TopicController::class, 'create']);
+Route::get('topics/create/{parent_id?}', [App\Http\Controllers\TopicController::class, 'create'])->name('topics.create_child');
 
 
 // Ruta adicional para obtener temas hijos

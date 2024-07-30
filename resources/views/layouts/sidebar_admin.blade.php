@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul class="navbar-nav bg-primary sidebar sidebar-dark accordion admin" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
@@ -45,7 +45,7 @@
     <!-- Divider -->
     <!--<hr class="sidebar-divider">-->
 
-    <li class="nav-item">
+    <!--<li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
@@ -56,7 +56,7 @@
                 <a class="collapse-item" href="/">Mis Tarjetas</a>
             </div>
         </div>
-    </li>
+    </li>-->
 
 
     <!-- Nav Item - Pages Collapse Menu -->

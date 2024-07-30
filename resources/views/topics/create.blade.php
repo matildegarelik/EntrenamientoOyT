@@ -10,7 +10,7 @@
             <input type="text" class="form-control" id="name" name="name" required>
         </div>
         <div class="form-group">
-            <label for="parent_id">Parent Topic</label>
+            <label for="parent_id">Parent Topic <?=$parent_id?></label>
             <select class="form-control" id="parent_id" name="parent_id">
                 <option value="">None</option>
                 @foreach ($topics as $topic)
