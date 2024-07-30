@@ -7,7 +7,7 @@
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">{{ $userTest->test->topic->name }} - Test Result</h5>
-                <p>Score: {{ $userTest->score }}/{{ count($userTest->test->questions) }}</p>
+                <p>Score: {{$userTest->score*100/count($userTest->test->questions)}}% ({{ $userTest->score }}/{{ count($userTest->test->questions) }})</p>
                 @foreach($userTest->answers as $answerData)
                     <div>
                         <strong>Question:</strong> {{ $answerData['question'] }}<br>

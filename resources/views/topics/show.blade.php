@@ -38,6 +38,38 @@
         @endforeach
     </div>
 
+    <!-- TEST -->
+    @if($topic->test)
+    <hr>
+    <div class="container_fluid">
+        <h2>Test: {{ $topic->test->name }}</h2>
+        <form method="POST" action="{{ route('tests.submit', $topic->test->id) }}">
+            @csrf
+            @foreach($topic->test->questions as $index => $question)
+                <div class="form-group">
+                    <label>{{ $question->question }}</label>
+                    @if($question->type == 'multiple')
+                        @foreach($question->options as $optionIndex => $option)
+                            <div>
+                                <input type="checkbox" name="answers[{{ $index }}][]" value="{{ $optionIndex }}">
+                                {{ $option }}
+                            </div>
+                        @endforeach
+                    @else
+                        @foreach($question->options as $optionIndex => $option)
+                            <div>
+                                <input type="radio" name="answers[{{ $index }}][answer]" value="{{ $optionIndex }}">
+                                {{ $option }}
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            @endforeach
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    @endif
+
     @if ($topic->children->count() > 0)
         <h3>Children Topics:</h3>
         <ul class="list-group">
@@ -73,8 +105,8 @@
                 <input type="hidden" name="topic_id" value="{{ $topic->id }}">
                 <input type="hidden" name="fragment" id="modalFragment">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="fragmentModalLabel">Edit Fragment and Add Question</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="fragmentModalLabel">Create Card</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -89,7 +121,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save to Card</button>
                 </div>
             </form>
@@ -112,5 +144,13 @@
         const fragment = document.getElementById('modalFragmentContent').value;
         document.getElementById('modalFragment').value = fragment;
     });
+
+    $(document).ready(function() {
+        $('#fragmentModal').on('hidden.bs.modal', function () {
+            // Deseleccionar todos los checkboxes
+            $('input[name="fragments[]"]').prop('checked', false);
+        });
+    });
+
 </script>
 @endsection

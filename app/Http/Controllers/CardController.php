@@ -19,10 +19,10 @@ class CardController extends Controller
         } elseif ($filter == 'pending') {
             $cards = Card::where('user_id', $user->id)->whereDate('next_reminder', now()->toDateString())->paginate(10);
         } else {
-            $cards = Card::where('user_id', $user->id)->paginate(10);
+            $cards = collect([]);
         }
 
-        return view('cards.index', compact('cards'));
+        return view('cards.index', compact('cards','filter'));
     }
 
 
