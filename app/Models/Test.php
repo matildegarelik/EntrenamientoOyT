@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Test extends Model
 {
-    protected $fillable = ['topic_id'];
+    protected $fillable = ['topic_id','amount_questions'];
 
     public function topic()
     {

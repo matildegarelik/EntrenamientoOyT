@@ -3,6 +3,8 @@
 @section('content')
 <div class="container">
     <h1>Test for {{ $test->topic->name }}</h1>
+    <strong>Amount of questions to show:</strong> {{$test->amount_questions}}
+    <br>
     <ul class="list-group">
         @foreach ($test->questions as $question)
             <li class="list-group-item">

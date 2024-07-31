@@ -39,7 +39,7 @@ class TestController extends Controller
             'questions.*.correct_answers.*' => 'boolean'
         ]);
 
-        $test = Test::create(['topic_id' => $request->topic_id]);
+        $test = Test::create(['topic_id' => $request->topic_id, 'amount_questions'=>$request->amount_questions]);
 
         foreach ($request->questions as $questionData) {
             $test->questions()->create([

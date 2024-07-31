@@ -38,18 +38,32 @@ class TopicController extends Controller
     {
         $topic->load('children');
         $topic->load('test');
-        if(isset($topic->test)){
-            foreach($topic->test->questions as $q){
-                $cont=0;
-                foreach($q->correct_answers as $ca){
-                    if($ca>0) $cont++;
-                }
-                if($cont>1){
-                    $q->type="multiple";
-                }else{
-                    $q->type='single';
-                }
+        if (isset($topic->test)) {
+            // Obtener todas las preguntas
+            $questions = $topic->test->questions;
+    
+            // Seleccionar aleatoriamente preguntas igual a amount_questions
+            if ($topic->test->amount_questions > 0 && $topic->test->amount_questions <= $questions->count()) {
+                $questions = $questions->random($topic->test->amount_questions);
             }
+            $questions=$questions->shuffle();
+    
+            // Desordenar opciones y correct_answers consistentemente
+            foreach ($questions as $q) {
+                $cont = 0;
+                foreach ($q->correct_answers as $ca) {
+                    if ($ca > 0) $cont++;
+                }
+                $q->type = $cont > 1 ? "multiple" : 'single';
+    
+                // Combinar opciones y correct_answers para desordenarlas consistentemente
+                $combined = array_map(null, $q->options, $q->correct_answers);
+                shuffle($combined);
+                $q->options = array_column($combined, 0);
+                $q->correct_answers = array_column($combined, 1);
+            }
+    
+            $topic->test->questions = $questions;
         }
         
         return view('topics.show', compact('topic'));

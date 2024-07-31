@@ -22,6 +22,10 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group">
+            <label>Amount of questions to show</label>
+            <input type="number" name="amount_questions" class="form-control" value="10"></input>
+        </div>
 
         <div id="questions-container">
             <div class="question-template t0" style="display: none;">
