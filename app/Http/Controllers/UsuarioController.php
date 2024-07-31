@@ -34,4 +34,24 @@ class UsuarioController extends Controller
 
         return redirect()->route('profile.edit')->with('success', 'Profile updated successfully.');
     }
+
+    public function edit_card_settings()
+    {
+        $user = Auth::user();
+        return view('profile.configuration', compact('user'));
+    }
+
+    public function update_card_settings(Request $request)
+    {
+        $user = Auth::user();
+        $user->update($request->only([
+            'card_very_easy_days',
+            'card_easy_days',
+            'card_medium_days',
+            'card_hard_days',
+            'card_very_hard_days',
+        ]));
+
+        return redirect()->back()->with('success', 'Configuración actualizada correctamente.');
+    }
 }

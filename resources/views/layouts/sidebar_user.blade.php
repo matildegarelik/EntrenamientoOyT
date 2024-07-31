@@ -74,6 +74,7 @@
                 <div id="collapseTwo" class="collapse normal" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{route('cards.index')}}">Mis Tarjetas</a>
+                        <a class="collapse-item" href="{{route('profile.edit_card_settings')}}">Configuración</a>
                     </div>
                 </div>
             </li>

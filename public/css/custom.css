@@ -1,9 +1,9 @@
+/*********** SIDEBAR ****************/
 .sidebar #topicsToggle{
     top: 0;
     left: 0;
     z-index: 100;
-    padding: 10px 0 0;
-    /*border-right: 1px solid #dee2e6;*/    
+    padding: 10px 0 0; 
 }
 .sidebar #topicsToggle .nav-link {
     color: #333;
@@ -125,4 +125,11 @@
 
 .sidebar.admin a.nav-link{
     color:#efeff4;
+}
+
+/**************** TOPICS ********************/
+#topic-content h1{
+    font-size: 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
 }

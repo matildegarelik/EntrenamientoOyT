@@ -4,40 +4,58 @@
 <div class="container">
     <h1>{{ $topic->name }}</h1>
 
-    <div class="content">
+    <div class="content" id="topic-content">
         @php
-            $fragments = explode('<span class="fragment">', $topic->content);
+            $content = $topic->content;
+            $pattern = '/(<h1[^>]*>.*?<\/h1>)/i';
+            $parts = preg_split($pattern, $content, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+            $cardIndex = 0;
         @endphp
-        @foreach ($fragments as $index => $fragment)
-            @if ($index > 0)
-                @php
-                    list($text, $rest) = explode('</span>', $fragment, 2);
-                    $text = trim($text);
-                    $isTitle = preg_match('/^<h[1-6]/i', $text);
-                @endphp
-                @if ($isTitle)
-                    <div class="form-check d-flex align-items-center">
-                        <input class="form-check-input me-2" type="checkbox" name="fragments[]" value="{{ $text }}" id="fragment-{{ $index }}" onclick="openModal(this, '{{ $index }}')">
-                        <label class="form-check-label" for="fragment-{{ $index }}">
-                            {!! $text !!}
-                        </label>
+    
+        @foreach ($parts as $part)
+            @if (preg_match($pattern, $part))
+                @if ($cardIndex > 0)
                     </div>
-                    {!! $rest !!}
-                @else
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="fragments[]" value="{{ $text }}" id="fragment-{{ $index }}" onclick="openModal(this, '{{ $index }}')">
-                        <label class="form-check-label" for="fragment-{{ $index }}">
-                            {!! $text !!}
-                        </label>
                     </div>
-                    {!! $rest !!}
+                    </div>
                 @endif
+                @php $cardIndex++; @endphp
+                <div class="card shadow mb-4">
+                    <a href="#collapseCard{{ $cardIndex }}" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCard{{ $cardIndex }}">
+                        <h6 class="m-0 font-weight-bold text-primary">{!! $part !!}</h6>
+                    </a>
+                    <div class="collapse" id="collapseCard{{ $cardIndex }}">
+                        <div class="card-body">
             @else
-                {!! $fragment !!}
+                @php
+                    $fragments = explode('<span class="fragment">', $part);
+                @endphp
+                @foreach ($fragments as $index => $fragment)
+                    @if ($index > 0)
+                        @php
+                            list($text, $rest) = explode('</span>', $fragment, 2);
+                            $text = trim($text);
+                        @endphp
+                        <span class="fragment">
+                            {!! $text !!}
+                            <input class="form-check-input me-2 ml-auto" type="checkbox" name="fragments[]" value="{{ $text }}" id="fragment-{{ $index }}" onclick="openModal(this, '{{ $index }}')">
+                        </span>
+                        {!! $rest !!}
+                    @else
+                        {!! $fragment !!}
+                    @endif
+                @endforeach
             @endif
         @endforeach
+    
+        @if ($cardIndex > 0)
+            </div>
+            </div>
+            </div>
+        @endif
     </div>
-
+    
+    
     <!-- TEST -->
     @if($topic->test)
     <hr>

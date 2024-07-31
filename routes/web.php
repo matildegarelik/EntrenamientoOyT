@@ -43,6 +43,9 @@ Route::get('user-tests/{userTest}/results', [App\Http\Controllers\TestController
 
 Route::get('/profile', [App\Http\Controllers\UsuarioController::class, 'edit'])->name('profile.edit');
 Route::post('/profile', [App\Http\Controllers\UsuarioController::class, 'update'])->name('profile.update');
+Route::get('/update-card-settings', [App\Http\Controllers\UsuarioController::class, 'edit_card_settings'])->name('profile.edit_card_settings');
+Route::post('/update-card-settings', [App\Http\Controllers\UsuarioController::class, 'update_card_settings'])->name('profile.update_card_settings');
+
 
 Route::post('tests/{test}/submit', [App\Http\Controllers\TestController::class, 'submitTest'])->name('tests.submit');
 Route::get('tests_results', [App\Http\Controllers\TestController::class, 'results'])->name('tests.results');

@@ -21,7 +21,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'card_very_easy_days',
+        'card_easy_days',
+        'card_medium_days',
+        'card_hard_days',
+        'card_very_hard_days',
     ];
 
     /**
