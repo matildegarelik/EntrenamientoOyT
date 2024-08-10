@@ -30,24 +30,81 @@
 @section('scripts')
     <script>
         tinymce.init({
-            selector: '#topic-content',
-            plugins: 'advlist autolink lists link image charmap print preview anchor',
-            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | mycustombutton',
-            toolbar_mode: 'floating',
-            height: 400,
-            setup: function (editor) {
-                editor.ui.registry.addButton('mycustombutton', {
-                    text: 'Select Fragment',
-                    onAction: function () {
-                        let selectedText = editor.selection.getContent({ format: 'html' });
-                        if (selectedText) {
-                            let newContent = `<span class="fragment">${selectedText}</span>`;
-                            editor.selection.setContent(newContent);
-                        }
-                    }
-                });
-            }
+  selector: '#topic-content',
+  plugins: 'advlist autolink lists link image charmap print preview anchor code',
+  toolbar: 'selectFragmentButton removeFragmentButton | undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | removeformat | code',
+  toolbar_mode: 'floating',
+  height: 400,
+  content_style: '.fragment { background-color: yellow; border: 1px solid orange; }',
+  setup: function (editor) {
+    // Añadir el botón para seleccionar fragmento
+    editor.ui.registry.addButton('selectFragmentButton', {
+      text: 'Seleccionar Fragmento',
+      onAction: function () {
+        const selectedText = editor.selection.getContent({ format: 'html' });
+        if (selectedText) {
+          // Envolver el texto seleccionado en un span con la clase 'fragment'
+          console.log(selectedText)
+          editor.execCommand('mceInsertContent', false, '<span class="fragment">' + selectedText + '</span>');
+        }
+      },
+      onSetup: function (buttonApi) {
+        // Habilitar el botón solo cuando haya texto seleccionado
+        function toggleButtonState() {
+          const selectedText = editor.selection.getContent();
+          buttonApi.setDisabled(selectedText.length === 0);
+        }
+
+        // Suscribirse a los eventos relevantes para verificar la selección de texto
+        editor.on('NodeChange keyup', toggleButtonState);
+        return function () {
+          editor.off('NodeChange keyup', toggleButtonState);
+        };
+      }
+    });
+
+    // Añadir el botón para quitar fragmento
+    editor.ui.registry.addButton('removeFragmentButton', {
+      text: 'Quitar Fragmento',
+      onAction: function () {
+        const selectedContent = editor.selection.getContent({ format: 'html' });
+        
+        // Crear un contenedor temporal para manipular el contenido seleccionado
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = selectedContent;
+
+        // Eliminar todos los spans con la clase 'fragment'
+        tempContainer.querySelectorAll('span.fragment').forEach(span => {
+          while (span.firstChild) {
+            span.parentNode.insertBefore(span.firstChild, span);
+          }
+          span.parentNode.removeChild(span);
         });
+
+        // Reemplazar el contenido seleccionado con el contenido sin spans
+        editor.selection.setContent(tempContainer.innerHTML);
+      },
+      onSetup: function (buttonApi) {
+        // Habilitar el botón solo cuando haya un fragmento seleccionado
+        function toggleButtonState() {
+          const selectedContent = editor.selection.getContent({ format: 'html' });
+          const tempContainer = document.createElement('div');
+          tempContainer.innerHTML = selectedContent;
+          const hasFragment = tempContainer.querySelector('span.fragment') !== null;
+          buttonApi.setDisabled(!hasFragment);
+        }
+
+        // Suscribirse a los eventos relevantes para verificar la selección de fragmento
+        editor.on('NodeChange keyup', toggleButtonState);
+        return function () {
+          editor.off('NodeChange keyup', toggleButtonState);
+        };
+      }
+    });
+  }
+});
+
+
     </script>
 @endsection
 

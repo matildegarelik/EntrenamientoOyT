@@ -195,12 +195,12 @@
                         <div class="modal-body">
                             <form id="editCardForm">
                                 <div class="form-group">
-                                    <label for="editFragment">Fragment</label>
-                                    <input type="text" class="form-control" id="editFragment" name="fragment" value="${card.fragment}">
-                                </div>
-                                <div class="form-group">
                                     <label for="editQuestion">Question</label>
                                     <input type="text" class="form-control" id="editQuestion" name="question" value="${card.question}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editFragment">Fragment</label>
+                                    <input type="text" class="form-control" id="editFragment" name="fragment" value="${card.fragment}">
                                 </div>
                             </form>
                         </div>

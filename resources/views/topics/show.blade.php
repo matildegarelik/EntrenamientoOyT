@@ -130,12 +130,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="modalFragmentContent">Fragment Content</label>
-                        <textarea class="form-control" id="modalFragmentContent" name="fragment_content" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
                         <label for="modalQuestion">Question</label>
                         <input type="text" class="form-control" id="modalQuestion" name="question">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalFragmentContent">Fragment Content</label>
+                        <textarea class="form-control" id="modalFragmentContent" name="fragment_content" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
