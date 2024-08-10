@@ -39,16 +39,21 @@
   setup: function (editor) {
     // Añadir el botón para seleccionar fragmento
     editor.ui.registry.addButton('selectFragmentButton', {
-      text: 'Seleccionar Fragmento',
-      onAction: function () {
-        const selectedText = editor.selection.getContent({ format: 'html' });
-        if (selectedText) {
-          // Envolver el texto seleccionado en un span con la clase 'fragment'
-          console.log(selectedText)
-          editor.execCommand('mceInsertContent', false, '<span class="fragment">' + selectedText + '</span>');
-        }
-      },
-      onSetup: function (buttonApi) {
+        text: 'Seleccionar Fragmento',
+        onAction: function () {
+            // Obtener el contenido seleccionado como bloques de HTML
+            let selectedContent = editor.selection.getContent({ format: 'html' });
+            if (selectedContent) {
+              selectedContent = selectedContent.replace(/<\/?p>/g, '<br>');
+
+              // Eliminar <br> adicionales al inicio y al final si no los necesitas
+              selectedContent = selectedContent.replace(/^<br>/, '').replace(/<br>$/, '');
+
+                // Envolver el contenido seleccionado en un span con la clase 'fragment'
+                const wrappedContent = '<span class="fragment">' + selectedContent + '</span>';
+                editor.execCommand('mceInsertContent', false, wrappedContent);
+            }
+        },onSetup: function (buttonApi) {
         // Habilitar el botón solo cuando haya texto seleccionado
         function toggleButtonState() {
           const selectedText = editor.selection.getContent();
@@ -67,37 +72,30 @@
     editor.ui.registry.addButton('removeFragmentButton', {
       text: 'Quitar Fragmento',
       onAction: function () {
-        const selectedContent = editor.selection.getContent({ format: 'html' });
-        
-        // Crear un contenedor temporal para manipular el contenido seleccionado
-        const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = selectedContent;
+        // Obtener el nodo actual en la posición del cursor
+        const node = editor.selection.getNode();
 
-        // Eliminar todos los spans con la clase 'fragment'
-        tempContainer.querySelectorAll('span.fragment').forEach(span => {
-          while (span.firstChild) {
-            span.parentNode.insertBefore(span.firstChild, span);
-          }
-          span.parentNode.removeChild(span);
-        });
-
-        // Reemplazar el contenido seleccionado con el contenido sin spans
-        editor.selection.setContent(tempContainer.innerHTML);
+        // Verificar si el nodo actual es un fragmento
+        if (node && node.classList.contains('fragment')) {
+          // Reemplazar el fragmento con su contenido interno, eliminando el span
+          editor.dom.remove(node, true);
+        }
       },
       onSetup: function (buttonApi) {
-        // Habilitar el botón solo cuando haya un fragmento seleccionado
         function toggleButtonState() {
-          const selectedContent = editor.selection.getContent({ format: 'html' });
-          const tempContainer = document.createElement('div');
-          tempContainer.innerHTML = selectedContent;
-          const hasFragment = tempContainer.querySelector('span.fragment') !== null;
-          buttonApi.setDisabled(!hasFragment);
+          // Obtener el nodo actual en la posición del cursor
+          const node = editor.selection.getNode();
+
+          // Habilitar el botón si el nodo es un fragmento
+          buttonApi.setDisabled(!(node && node.classList.contains('fragment')));
         }
 
-        // Suscribirse a los eventos relevantes para verificar la selección de fragmento
-        editor.on('NodeChange keyup', toggleButtonState);
+        // Suscribirse a los eventos relevantes para verificar la posición del cursor
+        editor.on('NodeChange', toggleButtonState);
+
+        // Limpiar la suscripción cuando se destruye el botón
         return function () {
-          editor.off('NodeChange keyup', toggleButtonState);
+          editor.off('NodeChange', toggleButtonState);
         };
       }
     });

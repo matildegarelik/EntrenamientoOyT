@@ -12,7 +12,7 @@
             </ul>
         </div>
     @endif
-    <form id="test-form" method="POST" action="{{ route('tests.store') }}">
+    <form method="POST" action="{{ route('tests.store') }}">
         @csrf
         <div class="form-group">
             <label for="topic_id">Topic</label>
@@ -34,9 +34,8 @@
                     <input type="text" class="form-control question">
                 </div>
                 <div class="options-container">
-                    @for ($i = 0; $i < 4; $i++)
                     <div class="form-group option">
-                        <label for="options">Option {{ $i + 1 }}</label>
+                        <label for="options">Option</label>
                         <input type="text" class="form-control options">
                         <label>
                             <input type="checkbox" class="correct-answer-chk">
@@ -44,8 +43,8 @@
                         </label>
                         <input type="hidden" class="correct-answer-hidden" value="0">
                     </div>
-                    @endfor
                 </div>
+                <button type="button" class="btn btn-secondary add-option">Add Option</button>
                 <button type="button" class="btn btn-danger remove-question">Remove Question</button>
                 <hr>
             </div>
@@ -82,42 +81,33 @@
     document.getElementById('questions-container').addEventListener('click', function(event) {
         if (event.target.classList.contains('remove-question')) {
             event.target.closest('.question-template').remove();
+        } else if (event.target.classList.contains('add-option')) {
+            const questionTemplate = event.target.closest('.question-template');
+            const optionsContainer = questionTemplate.querySelector('.options-container');
+            const optionCount = optionsContainer.querySelectorAll('.option').length;
+            const questionIndex = Array.from(document.querySelectorAll('.question-template')).indexOf(questionTemplate)-1;
+            const optionTemplate = document.createElement('div');
+            optionTemplate.classList.add('form-group', 'option');
+            optionTemplate.innerHTML = `
+                <label for="options">Option</label>
+                <input type="text" class="form-control options" name="questions[${questionIndex}][options][${optionCount}]">
+                <label>
+                    <input type="checkbox" class="correct-answer-chk" id="questions[${questionIndex}][correct_answers][${optionCount}]">
+                    Correct Answer
+                </label>
+                <input type="hidden" class="correct-answer-hidden" value="0" name="questions[${questionIndex}][correct_answers][${optionCount}]">
+                <button type="button" class="btn btn-danger remove-option">Remove Option</button>
+            `;
+            optionsContainer.appendChild(optionTemplate);
+        } else if (event.target.classList.contains('remove-option')) {
+            event.target.closest('.option').remove();
         }
     });
-
     document.addEventListener('change', function(event) {
         if (event.target.classList.contains('correct-answer-chk')) {
-            const questionTemplate = event.target.closest('.question-template');
-            const checkboxes = questionTemplate.querySelectorAll('.correct-answer-chk');
-            checkboxes.forEach(checkbox => {
-                if (checkbox !== event.target) {
-                    checkbox.checked = false;
-                    checkbox.closest('.option').querySelector('.correct-answer-hidden').value = '0';
-                }
-            });
-
-            const hiddenInput = event.target.closest('.option').querySelector('.correct-answer-hidden');
+            //const hiddenInput = event.target.closest('.option').querySelector('.correct-answer-hidden');
+            const hiddenInput=document.querySelector(`input[name="${event.target.id}"]`);
             hiddenInput.value = event.target.checked ? '1' : '0';
-        }
-    });
-
-    document.getElementById('test-form').addEventListener('submit', function(event) {
-        const questions = document.querySelectorAll('.question-template:not(.t0)');
-        let isValid = true;
-
-        questions.forEach(function(question) {
-            const correctAnswers = question.querySelectorAll('.correct-answer-chk:checked');
-            if (correctAnswers.length === 0) {
-                isValid = false;
-                question.querySelector('.form-group').classList.add('has-error');
-            } else {
-                question.querySelector('.form-group').classList.remove('has-error');
-            }
-        });
-
-        if (!isValid) {
-            event.preventDefault();
-            alert('Please ensure that each question has at least one correct answer.');
         }
     });
 </script>

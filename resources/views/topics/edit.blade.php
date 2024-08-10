@@ -32,10 +32,55 @@
 <script>
     tinymce.init({
         selector: '#topic-content',
-        plugins: 'advlist autolink lists link image charmap print preview anchor',
-        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+        plugins: 'advlist autolink lists link image charmap print preview anchor code',
+        toolbar: 'selectFragmentButton removeFragmentButton | undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | removeformat | code',
         toolbar_mode: 'floating',
-        height: 400
+        height: 400,
+        content_style: '.fragment { background-color: yellow; border: 1px solid orange; }',
+        setup: function (editor) {
+            editor.ui.registry.addButton('selectFragmentButton', {
+                text: 'Seleccionar Fragmento',
+                onAction: function () {
+                    let selectedContent = editor.selection.getContent({ format: 'html' });
+                    if (selectedContent) {
+                        selectedContent = selectedContent.replace(/<\/?p>/g, '<br>');
+                        selectedContent = selectedContent.replace(/^<br>/, '').replace(/<br>$/, '');
+                        const wrappedContent = '<span class="fragment">' + selectedContent + '</span>';
+                        editor.execCommand('mceInsertContent', false, wrappedContent);
+                    }
+                },
+                onSetup: function (buttonApi) {
+                    function toggleButtonState() {
+                        const selectedText = editor.selection.getContent();
+                        buttonApi.setDisabled(selectedText.length === 0);
+                    }
+                    editor.on('NodeChange keyup', toggleButtonState);
+                    return function () {
+                        editor.off('NodeChange keyup', toggleButtonState);
+                    };
+                }
+            });
+
+            editor.ui.registry.addButton('removeFragmentButton', {
+                text: 'Quitar Fragmento',
+                onAction: function () {
+                    const node = editor.selection.getNode();
+                    if (node && node.classList.contains('fragment')) {
+                        editor.dom.remove(node, true);
+                    }
+                },
+                onSetup: function (buttonApi) {
+                    function toggleButtonState() {
+                        const node = editor.selection.getNode();
+                        buttonApi.setDisabled(!(node && node.classList.contains('fragment')));
+                    }
+                    editor.on('NodeChange', toggleButtonState);
+                    return function () {
+                        editor.off('NodeChange', toggleButtonState);
+                    };
+                }
+            });
+        }
     });
 </script>
 @endsection

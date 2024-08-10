@@ -20,7 +20,8 @@ class TestController extends Controller
 
     public function create()
     {
-        $topics = Topic::whereDoesntHave('children')->get(); // Only topics that are not parents
+        //$topics = Topic::whereDoesntHave('children')->get(); // Only topics that are not parents
+        $topics = Topic::whereDoesntHave('test')->get();
         return view('tests.create', compact('topics'));
     }
 
