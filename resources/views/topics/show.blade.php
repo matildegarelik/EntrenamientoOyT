@@ -151,8 +151,13 @@
 
 @section('scripts')
 <script>
+    function decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
     function openModal(checkbox, index) {
-        const fragment = checkbox.value;
+        const fragment = decodeHtml(checkbox.value);
         document.getElementById('modalFragment').value = fragment;
         document.getElementById('modalFragmentContent').value = fragment;
         new bootstrap.Modal(document.getElementById('fragmentModal')).show();
