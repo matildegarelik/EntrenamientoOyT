@@ -9,6 +9,7 @@ use App\Models\UserTest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TestController extends Controller
 {
@@ -37,16 +38,22 @@ class TestController extends Controller
             'questions.*.options' => 'required|array',
             'questions.*.options.*' => 'required|string',
             'questions.*.correct_answers' => 'required|array',
-            'questions.*.correct_answers.*' => 'boolean'
+            'questions.*.correct_answers.*' => 'boolean',
+            'questions.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $test = Test::create(['topic_id' => $request->topic_id, 'amount_questions'=>$request->amount_questions]);
 
         foreach ($request->questions as $questionData) {
+            $imagePath = null;
+            if (isset($questionData['image'])) {
+                $imagePath = $questionData['image']->store('images/questions', 'public');
+            }
             $test->questions()->create([
                 'question' => $questionData['question'],
                 'options' => $questionData['options'],
                 'correct_answers' => $questionData['correct_answers'],
+                'image' => $imagePath
             ]);
         }
 
@@ -79,19 +86,26 @@ class TestController extends Controller
     public function update(Request $request, Test $test)
     {
         $request->validate([
+            'topic_id' => 'required|exists:topics,id',
             'questions' => 'required|array',
             'questions.*.question' => 'required|string|max:255',
             'questions.*.options' => 'required|array',
             'questions.*.correct_answers' => 'required|array',
+            'questions.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $test->questions()->delete();
 
         foreach ($request->questions as $question) {
+            if ($question['image']) {
+                Storage::delete($question['image']);
+            }
+            $imagePath = $question['image']->store('images/questions', 'public');
             $test->questions()->create([
                 'question' => $question['question'],
                 'options' => $question['options'],
                 'correct_answers' => $question['correct_answers'],
+                'image'=>$imagePath
             ]);
         }
 

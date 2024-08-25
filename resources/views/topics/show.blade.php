@@ -64,6 +64,9 @@
         <form method="POST" action="{{ route('tests.submit', $topic->test->id) }}">
             @csrf
             @foreach($topic->test->questions as $index => $question)
+                @if($question->image)
+                    <img src="{{ asset('storage/' . $question->image) }}" alt="Imagen de la pregunta"><br>
+                @endif
                 <div class="form-group">
                     <label>{{ $question->question }}</label>
                     @if($question->type == 'multiple')

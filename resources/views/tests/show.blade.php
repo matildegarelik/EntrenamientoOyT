@@ -10,6 +10,9 @@
             <li class="list-group-item">
                 <strong>Question:</strong> {{ $question->question }}
                 <br>
+                @if($question->image)
+                    <img src="{{ asset('storage/' . $question->image) }}" alt="Imagen de la pregunta"><br>
+                @endif
                 <strong>Type:</strong> {{$question->type}}
                 <br>
                 <strong>Options:</strong> <br>

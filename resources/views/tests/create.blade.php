@@ -12,7 +12,7 @@
             </ul>
         </div>
     @endif
-    <form id="test-form" method="POST" action="{{ route('tests.store') }}">
+    <form id="test-form" method="POST" action="{{ route('tests.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
             <label for="topic_id">Topic</label>
@@ -32,6 +32,10 @@
                 <div class="form-group">
                     <label for="question">Question</label>
                     <input type="text" class="form-control question">
+                </div>
+                <div class="form-group">
+                    <label for="image">Image (optional)</label>
+                    <input type="file" class="form-control image" accept="image/*">
                 </div>
                 <div class="options-container">
                     @for ($i = 0; $i < 4; $i++)
@@ -75,6 +79,7 @@
         template.querySelectorAll('.correct-answer-hidden').forEach((input, index) => {
             input.name = `questions[${questionCount}][correct_answers][${index}]`;
         });
+        template.querySelector('.image').name = `questions[${questionCount}][image]`;
 
         container.appendChild(template);
     });

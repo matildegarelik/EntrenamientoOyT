@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Edit Test</h1>
-    <form id="test-form" action="{{ route('tests.update', $test) }}" method="POST">
+    <form id="test-form" action="{{ route('tests.update', $test) }}" method="POST"  enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="form-group">
@@ -18,6 +18,15 @@
                 <div class="form-group">
                     <label for="question_{{ $index }}">Question</label>
                     <input type="text" class="form-control question" id="question_{{ $index }}" name="questions[{{ $index }}][question]" value="{{ $question->question }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="image_{{ $index }}">Current Image</label><br>
+                    @if ($question->image)
+                        <img src="{{ asset('storage/' . $question->image) }}" alt="Image for {{ $question->question }}" style="max-width: 200px;">
+                    @else
+                        <p>No image uploaded</p>
+                    @endif
+                    <input type="file" class="form-control image" id="image_{{ $index }}" name="questions[{{ $index }}][image]" accept="image/*">
                 </div>
                 <div class="options-container">
                     @foreach ($question->options as $i => $option)
@@ -41,6 +50,10 @@
                 <div class="form-group">
                     <label for="question">Question</label>
                     <input type="text" class="form-control question">
+                </div>
+                <div class="form-group">
+                    <label for="image">Image (optional)</label>
+                    <input type="file" class="form-control image" accept="image/*">
                 </div>
                 <div class="options-container">
                     @for ($i = 0; $i < 4; $i++)
@@ -88,6 +101,7 @@ document.getElementById('add-question').addEventListener('click', function() {
         input.name = `questions[${questionCount}][correct_answers][${index}]`;
         input.value = '0';
     });
+    template.querySelector('.image').name = `questions[${questionCount}][image]`;
 
     container.appendChild(template);
 });
